@@ -1,39 +1,55 @@
-import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useState,useRef } from 'react';
+import { View, StyleSheet, Button } from 'react-native';
 import WebView from 'react-native-webview';
 
-function ReactDom() {
-    const webref = React.useRef(null)
-    const content = `
+ const content = `
     <!DOCTYPE html>
     <html>
         <head>
-            <title>Alerts</title>
-            <meta http-equiv="content-type" content="text/html; charset=utf-8">
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width,initial-scale=1.0">
+            <title>react-dom</title>
         </head>
+        <script>
+                window.document.addEventListener('message',function (event){
+                    if(JSON.parse(event.data).a == 1){
+                        messageContainer.innerHTML += '<li>增加li标签DOM节点</li>'
+                    }else if(JSON.parse(event.data).a == 2){
+                        messageContainer.innerHTML += '<p>增加li标签DOM节点</p>'
+                    }else {
+                        messageContainer.innerHTML = ''
+                    }
+                })
+        </script>
         <body>
-            <p style="font-weight:400;font-style:normal;font-size:21px;line-height:1.58;letter-spacing:-.003em;">
-                <a href="https://WWW.baidu.com">
-                    Tags
-                </a>
-                are great for describing the essence of your story in a single word or phrase, but stories are rarely about a single thing.
-            </p>
-            <script>
-                window.ReactNativeWebView.postMessage("Hello!")
-            </script>
+           <h1>react-dom</h1>
+           <ul id="messageContainer"></ul>
         </body>    
     </html>
     `;
 
-    const [updatehHtml,setUpdateHtml] = useState(content);
+const ReactDOMDemo = ()=>{
+    const webRef = useRef<any>();
+    const onPostMessage = ()=>{
+        webRef.current?.postMessage(JSON.stringify({a:'1'}))
+    }
+    const onPostMessage1 = ()=>{
+        webRef.current?.postMessage(JSON.stringify({a:'2'}))
+    }
+    const deletes = ()=>{
+        webRef.current?.postMessage(JSON.stringify({a:'3'}))
+    }
     return (
-        <View>
-            <WebView 
-            source={{html:updatehHtml,baseUrl:''}}
-            ref={webref}
+        <View style={{ flex:1,marginTop:20 }}>
+            <Button title="增加li标签" onPress={onPostMessage} />
+            <Button title="增加p标签" onPress={onPostMessage1} />
+            <Button title="清空" onPress={deletes} />
+            <WebView
+            ref={webRef}
+            source={{html:content}}
             />
         </View>
     )
-}
+} 
 
-export default ReactDom
+export default ReactDOMDemo
